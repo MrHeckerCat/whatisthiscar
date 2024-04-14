@@ -9,5 +9,5 @@
   "dependencies": {
     "express": "^4.19.3",
     "@google/generative-ai": "^0.6.0"
-  },
+  }
 }
