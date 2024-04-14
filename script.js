@@ -1,36 +1,86 @@
-// Import the Gemini API client
-const { GeminiAPI } = require('gemini-api');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-// Initialize the API client with your API key
-const gemini = new GeminiAPI('AIzaSyC7Wl6DM8VOAR7_NrxXLsaxLSeT4u2QYKM');
+const axios = require("axios");
 
-// Define the URL of the image you want to analyze
-const imageUrl = 'https://drive.google.com/file/d/1vZ718wNBlNKMjGOgH4aNEpT4Sx-70YWs/view?usp=sharing';
+const { Buffer } = require("buffer");
 
-// Define the endpoint for the Gemini API
-const endpoint = 'https://api.gemini.ai/v1/analyze';
 
-// Define the data you want to send to the Gemini API
-const data = {
-  image_url: imageUrl,
-  features: [
-    'msrp',
-    'mpg',
-    'engine',
-    'horsepower',
-    'transmission',
-    'dimensions',
-    'body_styles'
-  ]
-};
+const API_KEY = "AIzaSyC7Wl6DM8VOAR7_NrxXLsaxLSeT4u2QYKM";
 
-// Send a POST request to the Gemini API with the data
-gemini.post(endpoint, data)
-  .then(response => {
-    // Log the response from the Gemini API
-    console.log(response.data);
-  })
-  .catch(error => {
-    // Log any errors that occur
-    console.error(error);
-  });
+
+const genAI = new GoogleGenerativeAI(API_KEY);
+
+
+async function run() {
+
+  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+  const imageUrl = "https://storage.googleapis.com/whatisthiscartest/chevrolet%20camaro.png";
+
+
+  try {
+
+    const response = await axios.get(imageUrl, {
+
+      responseType: "arraybuffer",
+
+    });
+
+
+    const imageData = Buffer.from(response.data, "binary").toString("base64");
+
+    const imageText = `This is an image of a car. Here is the base64-encoded image data: data:image/jpeg;base64,${imageData}`;
+
+
+    const chat = model.startChat({
+
+      history: [
+
+        {
+
+          role: "user",
+
+          parts: [{ text: imageText }],
+
+        },
+
+        {
+
+          role: "model",
+
+          parts: [{ text: "Great to meet you. What would you like to know?" }],
+
+        },
+
+      ],
+
+      generationConfig: {
+
+        maxOutputTokens: 200,
+
+      },
+
+    });
+
+
+    const msg = "What is the MSRP, MPG, engine, horsepower, transmission, dimensions, and body styles of this car?";
+
+
+    const result = await chat.sendMessage(msg);
+
+    const responseFromChat = await result.waitForResponse();
+
+    const text = responseFromChat.parts[0].text;
+
+    console.log(text);
+
+  } catch (error) {
+
+    console.error("An error occurred:", error);
+
+  }
+
+}
+
+
+run();
