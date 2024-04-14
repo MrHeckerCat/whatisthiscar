@@ -15,7 +15,7 @@ async function run() {
 
   const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-  const imageUrl = "https://storage.googleapis.com/whatisthiscartest/chevrolet%20camaro.png";
+  const imageUrl = "";
 
 
   try {
