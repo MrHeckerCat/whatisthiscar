@@ -1,13 +1,14 @@
 {
-  "name": "whatisthiscar",
+  "name": "car-recognition-app",
   "version": "1.0.0",
-  "description": "whatisthiscar",
+  "description": "Car recognition web app using Gemini API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.17.1",
-    "@google/generative-ai": "^0.6.0"
+    "axios": "^0.21.1",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1"
   }
 }
