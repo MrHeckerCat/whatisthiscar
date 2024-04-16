@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 app.post('/api/recognize', async (req, res) => {
   try {
     const imageUrl = req.body.imageUrl;
-    const prompt = "This is the image of the car. Provide the following data about it: MSRP, MPG, Engine, Horsepower, Transmission, Dimensions, Body Style";
+    const prompt = "This is the image of the car. Provide the following data about it: Model, Manufacturer, Year Engine, Horsepower, Transmission, Dimensions, Body Style";
 
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
@@ -51,30 +51,33 @@ async function urlToGenerativePart(url) {
 
 function processGeminiResponse(text) {
   try {
-    const msrpRegex = /MSRP:\s*(\S+)/i;
-    const mpgRegex = /MPG:\s*(\S+)/i;
+    const modelRegex = /Model:\s*(.*)/i;
+    const manufacturerRegex = /Manufacturer:\s*(.*)/i;
+    const YearRegex = /Manufacturer:\s*(.*)/i;
     const engineRegex = /Engine:\s*(.*)/i;
     const horsepowerRegex = /Horsepower:\s*(\S+)/i;
     const transmissionRegex = /Transmission:\s*(.*)/i;
-    const dimensionsRegex = /Dimensions:\s*(.*)/i;
     const bodyStyleRegex = /Body Style:\s*(.*)/i;
+    const dimensionsRegex = /Dimensions:\s*(.*)/i; // Added regex for dimensions
 
-    const msrp = text.match(msrpRegex) ? text.match(msrpRegex)[1] : "N/A";
-    const mpg = text.match(mpgRegex) ? text.match(mpgRegex)[1] : "N/A";
+    const model = text.match(modelRegex) ? text.match(modelRegex)[1] : "N/A";
+    const manufacturer = text.match(manufacturerRegex) ? text.match(manufacturerRegex)[1] : "N/A";
+    const year = text.match(manufacturerRegex) ? text.match(manufacturerRegex)[1] : "N/A";
     const engine = text.match(engineRegex) ? text.match(engineRegex)[1] : "N/A";
     const horsepower = text.match(horsepowerRegex) ? text.match(horsepowerRegex)[1] : "N/A";
     const transmission = text.match(transmissionRegex) ? text.match(transmissionRegex)[1] : "N/A";
-    const dimensions = text.match(dimensionsRegex) ? text.match(dimensionsRegex)[1] : "N/A";
     const bodyStyle = text.match(bodyStyleRegex) ? text.match(bodyStyleRegex)[1] : "N/A";
+    const dimensions = text.match(dimensionsRegex) ? text.match(dimensionsRegex)[1] : "N/A"; // Extracting dimensions
 
     return {
-      msrp,
-      mpg,
+      model,
+      manufacturer,
+      year,
       engine,
       horsepower,
       transmission,
-      dimensions,
       bodyStyle,
+      dimensions, // Added to the returned object
     };
   } catch (parsingError) {
     console.error('Error parsing Gemini response:', parsingError);
