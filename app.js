@@ -4,7 +4,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const axios = require('axios');
 
 // Replace with your actual Gemini API key 
-const GEMINI_API_KEY = 'AIzaSyC7Wl6DM8VOAR7_NrxXLsaxLSeT4u2QYKM';
+const GEMINI_API_KEY = '';
 
 const app = express();
 app.use(bodyParser.json());
@@ -53,7 +53,7 @@ function processGeminiResponse(text) {
   try {
     const modelRegex = /Model:\s*(.*)/i;
     const manufacturerRegex = /Manufacturer:\s*(.*)/i;
-    const YearRegex = /Manufacturer:\s*(.*)/i;
+    const yearRegex = /Year:\s*(.*)/i;
     const engineRegex = /Engine:\s*(.*)/i;
     const horsepowerRegex = /Horsepower:\s*(\S+)/i;
     const transmissionRegex = /Transmission:\s*(.*)/i;
@@ -62,7 +62,7 @@ function processGeminiResponse(text) {
 
     const model = text.match(modelRegex) ? text.match(modelRegex)[1] : "N/A";
     const manufacturer = text.match(manufacturerRegex) ? text.match(manufacturerRegex)[1] : "N/A";
-    const year = text.match(manufacturerRegex) ? text.match(manufacturerRegex)[1] : "N/A";
+    const year = text.match(yearRegex) ? text.match(yearRegex)[1] : "N/A";
     const engine = text.match(engineRegex) ? text.match(engineRegex)[1] : "N/A";
     const horsepower = text.match(horsepowerRegex) ? text.match(horsepowerRegex)[1] : "N/A";
     const transmission = text.match(transmissionRegex) ? text.match(transmissionRegex)[1] : "N/A";
