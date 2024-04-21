@@ -3,11 +3,11 @@ const bodyParser = require('body-parser');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const axios = require('axios');
 const Multer = require('multer');
-const {Storage} = require('@google-cloud/storage');
+const { Storage } = require('@google-cloud/storage');
 const fs = require('fs');
 
 // Replace with your actual Gemini API key and GCP project ID
-const GEMINI_API_KEY = '';
+const GEMINI_API_KEY = 'AIzaSyC7Wl6DM8VOAR7_NrxXLsaxLSeT4u2QYKM';
 const GCP_PROJECT_ID = 'theta-maker-418212';
 
 // Multer configuration
@@ -17,12 +17,15 @@ const multer = Multer({
 });
 
 // GCP Storage client
-const storage = new Storage({projectId: GCP_PROJECT_ID});
+const storage = new Storage({ projectId: GCP_PROJECT_ID });
 const bucketName = 'whatisthiscartest';
 const bucket = storage.bucket(bucketName);
 
 const app = express();
 app.use(bodyParser.json());
+
+// Global variable to store uploaded image URL
+let uploadedImageUrl = undefined;
 
 // Endpoint for file upload
 app.post('/api/upload', multer.single('image'), async (req, res) => {
@@ -33,8 +36,8 @@ app.post('/api/upload', multer.single('image'), async (req, res) => {
     }
 
     // File type validation (example for JPEG images)
-    if (req.file.mimetype !== 'image/jpeg') {
-      return res.status(400).send('Invalid file type. Only JPEG images are allowed.');
+    if (!req.file.mimetype.startsWith('image')) {
+      return res.status(400).send('Invalid file type. Only image files are allowed.');
     }
 
     // Upload file to GCP bucket
@@ -44,38 +47,41 @@ app.post('/api/upload', multer.single('image'), async (req, res) => {
     blobStream.end(req.file.buffer);
 
     // Get public URL of the uploaded file
-    const publicUrl = `https://storage.googleapis.com/${bucketName}/${req.file.originalname}`;
-    console.log('File uploaded. Public URL:', publicUrl);
+    uploadedImageUrl = `https://storage.googleapis.com/${bucketName}/${req.file.originalname}`;
+    console.log('File uploaded. Public URL:', uploadedImageUrl);
 
-    // Process the image using the public URL
-    const carData = await processImage(publicUrl);
-    res.json(carData);
+    res.json({ imageUrl: uploadedImageUrl });
   } catch (error) {
     console.error('Error processing uploaded file:', error);
-    console.error('Error details:', error.message, error.stack);
-    // More specific error messages
-    let errorMessage = 'Error processing uploaded file';
-    if (error.message.includes('bucket')) {
-      errorMessage = 'Error accessing GCP bucket. Check permissions and bucket name.';
-    } else if (error.message.includes('download')) {
-      errorMessage = 'Error downloading image. Check the URL and network connectivity.';
-    } 
-    res.status(500).send(errorMessage);
+    res.status(500).send('Error processing uploaded file.');
   }
 });
 
 // Endpoint for URL-based recognition
 app.post('/api/recognize', async (req, res) => {
   try {
-    console.log('URL-based recognition request received.');
-    const imageUrl = req.body.imageUrl;
+    console.log('Recognition request received.');
+
+    // Use uploadedImageUrl if available, otherwise use provided URL
+    const imageUrl = uploadedImageUrl || req.body.imageUrl;
+
+    // Ensure an image URL is available
+    if (!imageUrl) {
+      return res.status(400).send('No image URL provided. Please upload an image or enter a URL.');
+    }
+
     const carData = await processImage(imageUrl);
     res.json(carData);
+
+    // Reset uploadedImageUrl after processing
+    uploadedImageUrl = undefined;
+
   } catch (error) {
     console.error('Error processing image:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 async function urlToGenerativePart(url) {
   try {
     console.log('Downloading image from URL:', url);
@@ -90,37 +96,7 @@ async function urlToGenerativePart(url) {
     };
   } catch (error) {
     console.error('Error downloading or processing image:', error);
-    if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      console.error('Error downloading image:', error.response.data);
-      console.error('Status code:', error.response.status);
-      console.error('Headers:', error.response.headers);
-    } else if (error.request) {
-      // The request was made but no response was received
-      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-      // http.ClientRequest in node.js
-      console.error('No response received from image URL:', error.request);
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      console.error('Error setting up image download request:', error.message);
-    }
-    throw new Error('Failed to convert image URL to Part object'); 
-  }
-}
-
-function fileToGenerativePart(path, mimeType) {
-  try {
-    const imageBuffer = fs.readFileSync(path);
-    return {
-      inlineData: {
-        data: imageBuffer.toString('base64'),
-        mimeType,
-      },
-    };
-  } catch (error) {
-    console.error('Error reading image file:', error);
-    throw new Error('Failed to convert image file to Part object');
+    throw new Error('Failed to convert image URL to Part object');
   }
 }
 
@@ -130,36 +106,21 @@ async function processImage(imageUrl) {
   const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
   const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
 
-  let imagePart;
   try {
-    if (imageUrl.startsWith('http')) {
-      console.log('Processing image from URL:', imageUrl);
-      imagePart = await urlToGenerativePart(imageUrl);
-    } else {
-      console.log('Processing image from local file path:', imageUrl);
-      imagePart = fileToGenerativePart(imageUrl, 'image/jpeg'); 
-    }
-
-    console.log('imagePart:', imagePart); // Added console.log statement
+    console.log('Processing image from URL:', imageUrl);
+    const imagePart = await urlToGenerativePart(imageUrl);
 
     console.log('Sending request to Gemini API...');
     const result = await model.generateContent([prompt, imagePart]);
     const response = await result.response;
-    const text = response.text();
+    const text = await response.text();
     console.log('Gemini API response received. Extracting car information...');
     return processGeminiResponse(text);
   } catch (error) {
     console.error('Error processing image:', error);
-    // More specific error handling
-    if (error.message.includes('Gemini API')) {
-      // Handle Gemini API errors (e.g., check API key, permissions, request structure)
-    } else if (error.message.includes('Part object')) {
-      // Handle image conversion errors
-    } 
-    throw error; // Re-throw to be caught by the outer try-catch block
+    throw new Error('Failed to process image.');
   }
 }
-
 function processGeminiResponse(text) {
   try {
     const modelRegex = /Model:\s*(.*)/i;
