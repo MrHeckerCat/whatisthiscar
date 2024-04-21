@@ -1,109 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Car Recognition App</title>
-  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <style>
-    /* Basic styling (customize as needed) */
-    body { font-family: sans-serif; }
-    #results { white-space: pre-wrap; font-family: monospace; }
-    button { margin-right: 10px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Recognition App</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        /* Basic styling (customize as needed) */
+        body { font-family: sans-serif; }
+        #results { white-space: pre-wrap; font-family: monospace; }
+        button { margin-right: 10px; }
+    </style>
 </head>
 <body>
-  <h1>Car Recognition</h1>
+    <h1>Car Recognition</h1>
+    <form id="image-form" method="POST" enctype="multipart/form-data">
+        <div>
+            <label for="image-url">Enter image URL:</label>
+            <input type="text" id="image-url" placeholder="Enter image URL">
+            <button type="button" id="image-recognize-button" onclick="recognizeCar()">Recognize Car</button>
+        </div>
+        <div>
+            <label for="image-file">Upload Image:</label>
+            <input type="file" id="image-file" name="image" accept="image/*">
+            <button type="button" id="image-upload-button" onclick="handleUpload()">Upload</button>
+        </div>
+    </form>
+    <div id="results"></div>
+    <script>
+        let uploadedImageUrl;
 
-  <form id="image-form" method="POST" enctype="multipart/form-data">
-    <div>
-      <label for="image-url">Enter image URL:</label>
-      <input type="text" id="image-url" placeholder="Enter image URL">
-      <button type="button" id="image-url-button" onclick="recognizeCarByUrl()">Recognize Car</button>
-    </div>
-    <div>
-      <label for="image-file">Upload Image:</label>
-      <input type="file" id="image-file" name="image" accept="image/*">
-      <button type="button" id="image-upload-button" onclick="recognizeCarByUpload()">Upload and Recognize</button>
-    </div>
-  </form>
-
-  <div id="results"></div>
-
-  <script>
-    function isValidImageUrl(input) {
-      return /^https?:\/\/[^/]+\/.*\.(jpeg|jpg|png|gif)$/i.test(input);
-    }
-
-    function recognizeCarByUrl() {
-      const imageUrl = document.getElementById('image-url').value;
-      if (!isValidImageUrl(imageUrl)) {
-        return displayError("Please enter a valid image URL.");
-      }
-
-      // Disable the button to prevent multiple submissions
-      document.getElementById('image-url-button').disabled = true;
-
-      axios.post('/api/recognize', { imageUrl })
-        .then(response => {
-          displayResults(response.data);
-        })
-        .catch(error => {
-          console.error(error);
-          displayError("Error occurred!");
-        })
-        .finally(() => {
-          // Enable the button after processing is complete
-          document.getElementById('image-url-button').disabled = false;
-        });
-    }
-
-    function recognizeCarByUpload() {
-      const fileInput = document.getElementById('image-file');
-      const file = fileInput.files[0];
-      if (!file) {
-        return displayError("Please select a file.");
-      }
-
-      // Disable the button to prevent multiple submissions
-      document.getElementById('image-upload-button').disabled = true;
-
-      const formData = new FormData();
-      formData.append('image', file);
-
-      axios.post('/api/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+        function isValidImageUrl(input) {
+            return /^https?:\/\/[^/]+\/.*\.(jpeg|jpg|png|gif)$/i.test(input);
         }
-      })
-        .then(response => {
-          displayResults(response.data);
-        })
-        .catch(error => {
-          console.error(error);
-          displayError("Error occurred during upload!");
-        })
-        .finally(() => {
-          // Enable the button after processing is complete
-          document.getElementById('image-upload-button').disabled = false;
-        });
-    }
 
-    function displayResults(carData) {
-      const resultsDiv = document.getElementById('results');
-      resultsDiv.innerHTML = ''; // Clear previous results
+        async function recognizeCar() {
+            let imageUrl = document.getElementById('image-url').value;
 
-      for (const key in carData) {
-        const value = carData[key];
-        const p = document.createElement('p');
-        p.textContent = `${key}: ${value}`;
-        resultsDiv.appendChild(p);
-      }
-    }
+            if (uploadedImageUrl) {
+                imageUrl = uploadedImageUrl;
+            }
 
-    function displayError(message) {
-      document.getElementById('results').innerText = message;
-    }
-  </script>
+            if (!isValidImageUrl(imageUrl)) {
+                return displayError("Please enter a valid image URL or upload an image.");
+            }
+
+            document.getElementById('image-recognize-button').disabled = true;
+
+            try {
+                const response = await axios.post('/api/recognize', { imageUrl });
+                displayResults(response.data);
+            } catch (error) {
+                console.error(error);
+                displayError("Error occurred during recognition!");
+            } finally {
+                document.getElementById('image-recognize-button').disabled = false;
+                uploadedImageUrl = null;
+            }
+        }
+
+        async function handleUpload() {
+            const fileInput = document.getElementById('image-file');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                return displayError("Please select a file.");
+            }
+
+            document.getElementById('image-upload-button').disabled = true;
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const response = await axios.post('/api/upload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+                uploadedImageUrl = response.data.imageUrl;
+                displayError("File uploaded successfully. Click \"Recognize Car\" to proceed.");
+            } catch (error) {
+                console.error(error);
+                displayError("Error occurred during upload!");
+            } finally {
+                document.getElementById('image-upload-button').disabled = false;
+            }
+        }
+
+        function displayResults(carData) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            for(const key in carData) {
+                const value = carData[key];
+                const p = document.createElement('p');
+                p.textContent = `${key}: ${value}`;
+                resultsDiv.appendChild(p);
+            }
+        }
+
+        function displayError(message) {
+            document.getElementById('results').innerText = message;
+        }
+    </script>
 </body>
 </html>
