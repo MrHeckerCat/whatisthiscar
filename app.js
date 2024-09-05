@@ -70,7 +70,7 @@ app.post('/api/recognize', async (req, res) => {
       return res.status(400).send('No image URL provided. Please upload an image or enter a URL.');
     }
 
-    const carData = await processImage(imageUrl);
+    const carData = await processImage(imageUrl, res); // Pass res here
     res.json(carData);
 
     // Reset uploadedImageUrl after processing
@@ -78,7 +78,7 @@ app.post('/api/recognize', async (req, res) => {
 
   } catch (error) {
     console.error('Error processing image:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: 'Failed to process image.' }); // Send a more generic error
   }
 });
 
@@ -86,6 +86,12 @@ async function urlToGenerativePart(url) {
   try {
     console.log('Downloading image from URL:', url);
     const response = await axios.get(url, { responseType: 'arraybuffer' });
+
+    // Error handling for unsuccessful download
+    if (!response.data) {
+      throw new Error('Failed to download image from URL.');
+    }
+
     const imageBuffer = Buffer.from(response.data, 'binary');
     const mimeType = response.headers['content-type'];
     return {
@@ -96,15 +102,16 @@ async function urlToGenerativePart(url) {
     };
   } catch (error) {
     console.error('Error downloading or processing image:', error);
-    throw new Error('Failed to convert image URL to Part object');
+    // Explicitly throw a new error to handle in the processImage function
+    throw new Error('Failed to convert image URL to Part object'); 
   }
 }
 
 // Function to process the image (using either URL or uploaded file)
-async function processImage(imageUrl) {
+async function processImage(imageUrl, res) { 
   const prompt = "This is the image of the car. Provide the following data about it: Model, Manufacturer, Year Engine, Horsepower, Transmission, Dimensions, Body Style";
   const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Using gemini-1.5-flash
 
   try {
     console.log('Processing image from URL:', imageUrl);
@@ -115,13 +122,16 @@ async function processImage(imageUrl) {
     const response = await result.response;
     const text = await response.text();
     console.log('Gemini API response received. Extracting car information...');
-    return processGeminiResponse(text);
+    return processGeminiResponse(text, res); // Pass res here
   } catch (error) {
     console.error('Error processing image:', error);
-    throw new Error('Failed to process image.');
+    // Handle errors that occur during the image processing (including errors from urlToGenerativePart)
+    return res.status(500).json({ message: 'Failed to process image.' }); // Return error response
   }
 }
-function processGeminiResponse(text) {
+
+// Function to parse the Gemini response and extract car information
+function processGeminiResponse(text, res) { 
   try {
     const modelRegex = /Model:\s*(.*)/i;
     const manufacturerRegex = /Manufacturer:\s*(.*)/i;
@@ -151,7 +161,8 @@ function processGeminiResponse(text) {
     };
   } catch (parsingError) {
     console.error('Error parsing Gemini response:', parsingError);
-    throw new Error('Failed to parse car information'); 
+    // Handle errors that occur during parsing 
+    return res.status(500).json({ message: 'Failed to parse car information.' }); // Return error response
   }
 }
 
