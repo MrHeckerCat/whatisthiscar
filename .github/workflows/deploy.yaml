@@ -1,0 +1,20 @@
+name: Deploy to App Engine
+
+on:
+  push:
+    branches: [ main ] # Trigger deployment on push to the main branch (adjust if needed)
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3 # Checkout the code from the repository
+      - uses: google-github-actions/setup-gcloud@v1
+        with:
+          service_account_key: ${{ secrets.GOOGLE_CLOUD_SA_KEY }} # Use the service account secret
+          project_id: ${{ secrets.GCP_PROJECT_ID }} # Your GCP project ID
+      - name: Install dependencies
+        run: npm install # Adjust if you're using a different package manager
+      - name: Deploy to App Engine
+        run: gcloud app deploy --quiet # Deploy the application
