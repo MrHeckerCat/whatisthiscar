@@ -3,73 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>What Is This Car? - Car Recognition App</title>
-    <link rel="stylesheet" href="styles.css"> 
-    <script src="https://unpkg.com/axios/dist/axios.min.js" defer></script>
-    <script src="script.js" defer></script>
+    <title>whatisthiscar - Car Recognition</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <header>
-        <div class="container">
-            <a href="#" class="logo">whatisthiscar</a>
-            <nav>
-                <ul>
-                    <li><a href="#input">Home</a></li>
-                    <li><a href="#output">Recognition</a></li>
-                    <li><a href="#about">About</a></li>
-                </ul>
-            </nav>
-        </div>
+        <nav>
+            <div class="logo">🚗 whatisthiscar</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#recognition">Recognition</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+            <div class="burger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+        </nav>
     </header>
 
     <main>
-        <section id="input" class="section">
-            <div class="container">
-                <h2>Car Recognition</h2>
-                <form id="image-form" method="POST" enctype="multipart/form-data">
-                    <div>
-                        <label for="image-url">Enter image URL:</label>
-                        <input type="text" id="image-url" placeholder="Enter image URL">
-                    </div>
-                    <div>
-                        <input type="file" id="image-file" name="image" accept="image/*">
-                    </div>
-                    <div class="buttons">
-                        <button type="button" id="image-upload-button" onclick="handleUpload()">Upload</button>
-                        <button type="button" id="image-recognize-button" onclick="recognizeCar()">Recognize Car</button>
-                    </div>
-                </form>
+        <section id="input">
+            <h1>Car Recognition</h1>
+            <div class="input-container">
+                <input type="text" placeholder="Enter image URL">
+                <button class="browse-btn">Browse</button>
+                <button class="upload-btn">Upload</button>
             </div>
+            <button class="recognize-btn">Recognize car</button>
         </section>
 
-        <section id="output" class="section">
-            <div class="container">
-                <div id="results">
-                    </div>
+        <section id="output">
+            <h2>Car Recognition Result</h2>
+            <div class="result-container">
+                <img src="placeholder-car-image.jpg" alt="Recognized car" id="car-image">
+                <div class="car-info">
+                    <p><strong>Make:</strong> <span id="car-make"></span></p>
+                    <p><strong>Model:</strong> <span id="car-model"></span></p>
+                    <p><strong>Year:</strong> <span id="car-year"></span></p>
+                </div>
             </div>
+            <button class="upload-another-btn">Upload Another Image</button>
+            <a href="#home" class="go-home-btn">Go to Home</a>
         </section>
 
-        <section id="about" class="section">
-            <div class="container">
-                <h2>About Us</h2>
-                <p>Welcome to whatisthiscar, your go-to website for car recognition and information. Our goal is to help car enthusiasts and professionals quickly and accurately identify various car makes and models using advanced recognition technology.</p>
+        <section id="about">
+            <h2>About Us</h2>
+            <p>Welcome to 'whatisthiscar', your go-to website for car recognition and information. Our goal is to help car enthusiasts and professionals quickly and accurately identify various car makes and models using advanced recognition technology.</p>
         </section>
     </main>
 
     <footer>
-        <div class="container">
-            <div class="social-icons">
-                <a href="#" target="_blank"><img src="path/to/facebook-icon.svg" alt="Facebook"></a>
-                <a href="#" target="_blank"><img src="path/to/twitter-icon.svg" alt="Twitter"></a>
-                <a href="#" target="_blank"><img src="path/to/linkedin-icon.svg" alt="LinkedIn"></a>
-            </div>
-            <p>© 2024 whatisthiscar. All rights reserved.</p>
-            <div class="footer-links">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-                <a href="#">Contact Us</a>
-            </div>
+        <div class="contact-info">
+            <p>Email: contact@whatisthiscar.com</p>
+            <p>Phone: +123 456 7890</p>
+            <p>Address: 123 Car Lane, Auto City, CA 91000</p>
         </div>
+        <div class="social-links">
+            <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+        <div class="legal-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+        </div>
+        <p class="copyright">&copy; 2023 whatisthiscar. All rights reserved.</p>
     </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
