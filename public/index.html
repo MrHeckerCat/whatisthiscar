@@ -3,26 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Recognition App</title>
+    <title>What Is This Car? - Car Recognition App</title>
     <link rel="stylesheet" href="styles.css"> 
+    <script src="https://unpkg.com/axios/dist/axios.min.js" defer></script>
+    <script src="script.js" defer></script>
 </head>
 <body>
-    <h1>Car Recognition</h1>
-    <form id="image-form" method="POST" enctype="multipart/form-data">
-        <div>
-            <label for="image-url">Enter image URL:</label>
-            <input type="text" id="image-url" placeholder="Enter image URL">
-            <button type="button" id="image-recognize-button" onclick="recognizeCar()">Recognize Car</button>
+    <header>
+        <div class="container">
+            <a href="#" class="logo">whatisthiscar</a>
+            <nav>
+                <ul>
+                    <li><a href="#input">Home</a></li>
+                    <li><a href="#output">Recognition</a></li>
+                    <li><a href="#about">About</a></li>
+                </ul>
+            </nav>
         </div>
-        <div>
-            <label for="image-file">Upload Image:</label>
-            <input type="file" id="image-file" name="image" accept="image/*">
-            <button type="button" id="image-upload-button" onclick="handleUpload()">Upload</button>
-        </div>
-    </form>
-    <div id="results"></div>
+    </header>
 
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script> 
-    <script src="script.js"></script> 
+    <main>
+        <section id="input" class="section">
+            <div class="container">
+                <h2>Car Recognition</h2>
+                <form id="image-form" method="POST" enctype="multipart/form-data">
+                    <div>
+                        <label for="image-url">Enter image URL:</label>
+                        <input type="text" id="image-url" placeholder="Enter image URL">
+                    </div>
+                    <div>
+                        <input type="file" id="image-file" name="image" accept="image/*">
+                    </div>
+                    <div class="buttons">
+                        <button type="button" id="image-upload-button" onclick="handleUpload()">Upload</button>
+                        <button type="button" id="image-recognize-button" onclick="recognizeCar()">Recognize Car</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section id="output" class="section">
+            <div class="container">
+                <div id="results">
+                    </div>
+            </div>
+        </section>
+
+        <section id="about" class="section">
+            <div class="container">
+                <h2>About Us</h2>
+                <p>Welcome to whatisthiscar, your go-to website for car recognition and information. Our goal is to help car enthusiasts and professionals quickly and accurately identify various car makes and models using advanced recognition technology.</p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="social-icons">
+                <a href="#" target="_blank"><img src="path/to/facebook-icon.svg" alt="Facebook"></a>
+                <a href="#" target="_blank"><img src="path/to/twitter-icon.svg" alt="Twitter"></a>
+                <a href="#" target="_blank"><img src="path/to/linkedin-icon.svg" alt="LinkedIn"></a>
+            </div>
+            <p>© 2024 whatisthiscar. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact Us</a>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
