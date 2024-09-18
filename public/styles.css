@@ -1,3 +1,135 @@
-body { font-family: sans-serif; }
-#results { white-space: pre-wrap; font-family: monospace; }
-button { margin-right: 10px; }
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #121212;
+    color: #eee;
+    margin: 0; 
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 20px; 
+}
+
+a {
+    color: #f87171; /* Red color for links */
+    text-decoration: none; 
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Header Styles */
+header {
+    background-color: #1f2937; 
+    padding: 20px 0; 
+}
+
+.logo {
+    font-size: 24px; 
+    font-weight: bold; 
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0; 
+    display: flex;
+    justify-content: flex-end;
+}
+
+nav li {
+    margin-left: 30px; 
+}
+
+/* Section Styles */
+.section {
+    padding: 40px 0; 
+}
+
+h2 {
+    color: #f87171; 
+    margin-bottom: 20px; 
+}
+
+/* Input Section */
+#image-form label {
+    display: block; 
+    margin-bottom: 5px; 
+}
+
+#image-form input[type="text"], 
+#image-form input[type="file"] {
+    width: 100%; 
+    padding: 10px; 
+    margin-bottom: 15px; 
+    border: 1px solid #6b7280; 
+    background-color: #1f2937; 
+    color: #eee; 
+}
+
+.buttons button {
+    background-color: #f87171; 
+    color: #fff;
+    border: none; 
+    padding: 10px 20px; 
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* Output Section */
+#results {
+    background-color: #1f2937; 
+    border: 1px solid #6b7280; 
+    padding: 20px; 
+    border-radius: 5px;
+}
+
+#results img { 
+    max-width: 100%;
+    height: auto; 
+    display: block; 
+    margin-bottom: 15px; 
+}
+
+/* About Us Section */
+#about p {
+    margin-bottom: 10px; 
+}
+
+#about h3 {
+    color: #f87171; 
+    margin-top: 20px; 
+    margin-bottom: 10px; 
+}
+
+/* Footer Styles */
+footer {
+    background-color: #1f2937; 
+    padding: 20px 0;
+    text-align: center; 
+}
+
+.social-icons {
+    margin-bottom: 15px; 
+}
+
+.social-icons a {
+    margin: 0 10px; 
+}
+
+.social-icons img {
+    width: 30px; 
+    height: 30px; 
+}
+
+.footer-links {
+    margin-top: 15px; 
+}
+
+.footer-links a {
+    margin: 0 10px; 
+}
