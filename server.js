@@ -4,8 +4,8 @@ const path = require('path');
 
 // Middleware to handle www to non-www redirect
 app.use((req, res, next) => {
-  if (req.hostname === 'www.whatisthicar.io') {
-    return res.redirect(301, `${req.protocol}://whatisthicar.io${req.originalUrl}`);
+  if (req.hostname === 'www.whatisthiscar.io') {
+    return res.redirect(301, `${req.protocol}://whatisthiscar.io${req.originalUrl}`);
   }
   next();
 });
