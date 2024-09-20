@@ -1,2 +1,3 @@
-- url: "www.whatisthiscar.io/*"
-  service: default # Adjust if you have a different service to handle redirects
+dispatch:
+  - url: "www.whatisthiscar.io/*"
+    redirect: whatisthiscar.io
