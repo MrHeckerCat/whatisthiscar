@@ -93,7 +93,7 @@ h2 {
 }
 
 .input-group button {
-    background-color: #34d399;
+    background-color: #15803d;
     color: #fff;
     border: none;
     padding: 10px 20px;
@@ -103,12 +103,16 @@ h2 {
 }
 
 .buttons button {
-    background-color: #34d399; 
+    background-color: #15803d; 
     color: #fff;
-    border: none; 
+    border: 2px solid #34d399;
     padding: 10px 20px; 
     cursor: pointer;
     border-radius: 5px;
+}
+.input-group button:hover,
+.buttons button:hover {
+    background-color: #166534;
 }
 
 /* Output Section */
