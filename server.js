@@ -13,7 +13,6 @@ app.use((req, res, next) => {
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ... other routes and middleware ...
 // Route for the Terms of Use page
 app.get(['/terms'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'terms.html'));
@@ -22,6 +21,11 @@ app.get(['/terms'], (req, res) => {
 // Route for the Privacy Policy page
 app.get('/privacy', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'privacy.html'));
+});
+
+// Catch-all route for any undefined routes
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
 });
 
 const port = process.env.PORT || 8080;
