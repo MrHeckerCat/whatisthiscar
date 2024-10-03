@@ -64,6 +64,12 @@ nav li {
     padding: 40px 0; 
 }
 
+h1 {
+    color: #fff; 
+    margin-bottom: 20px; 
+    text-align: center; 
+}
+
 h2 {
     color: #fff; 
     margin-bottom: 20px; 
