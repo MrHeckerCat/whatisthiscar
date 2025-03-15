@@ -7,8 +7,8 @@ const { Storage } = require('@google-cloud/storage');
 const fs = require('fs');
 
 // Replace with your actual Gemini API key and GCP project ID
-const GEMINI_API_KEY = 'AIzaSyC7Wl6DM8VOAR7_NrxXLsaxLSeT4u2QYKM';
-const GCP_PROJECT_ID = 'theta-maker-418212';
+const GEMINI_API_KEY = '';
+const GCP_PROJECT_ID = '';
 
 // Multer configuration
 const multer = Multer({
